@@ -10,6 +10,8 @@
     .message { padding: 14px 20px; border-radius: 18px; max-width: 75%; margin-bottom: 12px; }
     .user-message { background: #7c3aed; margin-left: auto; color: white; }
     .ai-message { background: #27272a; margin-right: auto; }
+    .sidebar-item { transition: all 0.2s; }
+    .sidebar-item:hover { background-color: #27272a; }
   </style>
 </head>
 <body class="bg-zinc-950 text-white">
@@ -44,22 +46,24 @@
   <!-- Main App -->
   <div id="main-app" class="locked min-h-screen flex">
     <!-- Sidebar -->
-    <div class="w-72 bg-zinc-900 border-r border-zinc-800 p-6">
+    <div class="w-72 bg-zinc-900 border-r border-zinc-800 p-6 overflow-y-auto">
       <h1 class="text-2xl font-bold mb-8 flex items-center gap-2">🪐 CosmoTools</h1>
+      
       <div class="space-y-1 text-zinc-300">
-        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">💬 AI Chat</div>
-        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📄 Documents</div>
-        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">💻 Coding Assistant</div>
-        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📚 School & Study Help</div>
-        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📊 Business Tools</div>
-        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">🔬 Research</div>
+        <div onclick="useTool('Write a professional business proposal for my client in the tech industry.')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📝 Business Proposal</div>
+        <div onclick="useTool('Help me write clean and efficient code for: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">💻 Coding Assistant</div>
+        <div onclick="useTool('Explain this school topic like I\'m 15 years old: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📚 School Help</div>
+        <div onclick="useTool('Create a detailed marketing strategy for: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📢 Marketing</div>
+        <div onclick="useTool('Research and summarize the latest information about: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">🔬 Research</div>
+        <div onclick="useTool('Help me write a professional email about: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📧 Email Writer</div>
       </div>
     </div>
 
-    <!-- Chat -->
+    <!-- Chat Area -->
     <div class="flex-1 flex flex-col">
-      <header class="h-16 border-b border-zinc-800 bg-zinc-900 px-8 flex items-center">
+      <header class="h-16 border-b border-zinc-800 bg-zinc-900 px-8 flex items-center justify-between">
         <h2 class="text-xl font-semibold">AI Workspace</h2>
+        <button onclick="showPaywall()" class="text-sm text-violet-400 hover:text-violet-300">Upgrade / Unlock</button>
       </header>
 
       <div id="chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
@@ -67,7 +71,7 @@
       <div class="p-6 border-t border-zinc-800 bg-zinc-900">
         <div class="max-w-3xl mx-auto flex gap-3">
           <input id="user-input" type="text" 
-                 class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5 text-lg focus:outline-none"
+                 class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5 text-lg focus:outline-none focus:border-violet-500"
                  placeholder="Ask CosmoAI anything...">
           <button onclick="sendMessage()" class="bg-violet-600 px-10 rounded-3xl font-medium">Send</button>
         </div>
@@ -81,12 +85,11 @@
 
     function checkPassword() {
       const input = document.getElementById('password-input').value.trim();
-      
       if (correctPasswords.includes(input)) {
         isUnlocked = true;
         document.getElementById('paywall').classList.add('hidden');
         document.getElementById('main-app').classList.remove('locked');
-        addMessage('ai', '✅ Access granted! Welcome to full CosmoTools. What would you like to work on today?');
+        addMessage('ai', '✅ Full access unlocked! Welcome to CosmoTools. How can I help you today?');
       } else {
         alert("Incorrect password. Please check your Gumroad receipt.");
       }
@@ -94,6 +97,15 @@
 
     function showPaywall() {
       if (!isUnlocked) document.getElementById('paywall').classList.remove('hidden');
+    }
+
+    function useTool(promptStart) {
+      if (!isUnlocked) {
+        showPaywall();
+        return;
+      }
+      document.getElementById('user-input').value = promptStart;
+      sendMessage();
     }
 
     async function sendMessage() {
@@ -122,7 +134,7 @@
         addMessage('ai', data.reply);
       } catch(e) {
         removeTyping(typingId);
-        addMessage('ai', "Sorry, I'm having trouble connecting.");
+        addMessage('ai', "Sorry, connection issue.");
       }
     }
 
@@ -141,7 +153,7 @@
       const div = document.createElement('div');
       div.id = id;
       div.className = "message ai-message";
-      div.textContent = "Thinking...";
+      div.textContent = "CosmoAI is thinking...";
       win.appendChild(div);
       win.scrollTop = win.scrollHeight;
       return id;
@@ -152,9 +164,11 @@
       if (el) el.remove();
     }
 
-    // Enter key
-    document.getElementById('user-input').addEventListener('keypress', e => {
-      if (e.key === 'Enter') sendMessage();
+    // Enter Key Fix
+    document.getElementById('user-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
     });
   </script>
 </body>
