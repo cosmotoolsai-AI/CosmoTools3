@@ -1,56 +1,28 @@
-document.addEventListener("DOMContentLoaded", () => {
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 45px;
+    gap: 20px;
+}
 
-    const loginModal = document.getElementById("loginModal");
-    const signupModal = document.getElementById("signupModal");
+.topbar-right {
+    display: flex;
+    align-items: center;
+}
 
-    const loginBtn = document.getElementById("loginBtn");
-    const openSignup = document.getElementById("openSignup");
-    const openLogin = document.getElementById("openLogin");
+.login-btn {
+    background: #4F46E5;
+    color: white;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
-    const closeButtons = document.querySelectorAll(".close-modal");
-
-    function open(modal) {
-        modal?.classList.remove("hidden");
-    }
-
-    function close(modal) {
-        modal?.classList.add("hidden");
-    }
-
-    // OPEN LOGIN
-    loginBtn?.addEventListener("click", () => {
-        open(loginModal);
-    });
-
-    // SWITCH TO SIGNUP
-    openSignup?.addEventListener("click", (e) => {
-        e.preventDefault();
-        close(loginModal);
-        open(signupModal);
-    });
-
-    // SWITCH TO LOGIN
-    openLogin?.addEventListener("click", (e) => {
-        e.preventDefault();
-        close(signupModal);
-        open(loginModal);
-    });
-
-    // CLOSE X BUTTON (THIS WAS BROKEN BEFORE)
-    closeButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
-            close(loginModal);
-            close(signupModal);
-        });
-    });
-
-    // CLICK OUTSIDE MODAL CLOSE
-    [loginModal, signupModal].forEach(modal => {
-        modal?.addEventListener("click", (e) => {
-            if (e.target === modal) {
-                close(modal);
-            }
-        });
-    });
-
-});
+.login-btn:hover {
+    background: #4338CA;
+    transform: translateY(-2px);
+}
