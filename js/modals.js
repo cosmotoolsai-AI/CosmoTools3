@@ -1,28 +1,46 @@
-.topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 45px;
-    gap: 20px;
-}
+document.addEventListener("DOMContentLoaded", () => {
 
-.topbar-right {
-    display: flex;
-    align-items: center;
-}
+    const loginModal = document.getElementById("loginModal");
+    const signupModal = document.getElementById("signupModal");
 
-.login-btn {
-    background: #4F46E5;
-    color: white;
-    border: none;
-    padding: 12px 22px;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
+    function show(el) {
+        el.classList.remove("hidden");
+    }
 
-.login-btn:hover {
-    background: #4338CA;
-    transform: translateY(-2px);
-}
+    function hide(el) {
+        el.classList.add("hidden");
+    }
+
+    // OPEN LOGIN ONLY FROM BUTTON
+    document.getElementById("loginBtn")?.addEventListener("click", () => {
+        show(loginModal);
+    });
+
+    // GLOBAL CLICK HANDLER
+    document.addEventListener("click", (e) => {
+
+        // CLOSE BUTTON
+        if (e.target.classList.contains("close-modal")) {
+            hide(loginModal);
+            hide(signupModal);
+        }
+
+        // SWITCH TO SIGNUP
+        if (e.target.id === "openSignup") {
+            e.preventDefault();
+            hide(loginModal);
+            show(signupModal);
+        }
+
+        // SWITCH TO LOGIN
+        if (e.target.id === "openLogin") {
+            e.preventDefault();
+            hide(signupModal);
+            show(loginModal);
+        }
+
+        // CLICK OUTSIDE CLOSE
+        if (e.target === loginModal) hide(loginModal);
+        if (e.target === signupModal) hide(signupModal);
+    });
+});

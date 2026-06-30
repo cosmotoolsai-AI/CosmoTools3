@@ -308,4 +308,10 @@ header{
 ::-webkit-scrollbar-thumb{
     background:#6366F1;
     border-radius:10px;
+    .hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
 }
