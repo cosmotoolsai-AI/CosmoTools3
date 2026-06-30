@@ -5,10 +5,15 @@ import { supabase } from "./supabase.js";
 ========================= */
 export async function signUp(email, password) {
 
-    return await supabase.auth.signUp({
+    const res = await supabase.auth.signUp({
         email,
         password
     });
+
+    // close UI immediately
+    document.getElementById("signupModal")?.classList.add("hidden");
+
+    return res;
 }
 
 /* =========================
@@ -16,10 +21,15 @@ export async function signUp(email, password) {
 ========================= */
 export async function login(email, password) {
 
-    return await supabase.auth.signInWithPassword({
+    const res = await supabase.auth.signInWithPassword({
         email,
         password
     });
+
+    // close UI immediately
+    document.getElementById("loginModal")?.classList.add("hidden");
+
+    return res;
 }
 
 /* =========================

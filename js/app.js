@@ -4,16 +4,31 @@ import { loadCloudConversations } from "./cloud-chats.js";
 window.currentUser = null;
 
 /* =========================
-   BOOT APP
+   SET USER
+========================= */
+function setUser(user) {
+
+    window.currentUser = user;
+    window.setCurrentUser?.(user);
+
+    // close modals when logged in
+    if (user) {
+        document.getElementById("loginModal")?.classList.add("hidden");
+        document.getElementById("signupModal")?.classList.add("hidden");
+
+        loadCloudConversations(user.id);
+    }
+}
+
+/* =========================
+   BOOT SESSION
 ========================= */
 async function boot() {
 
     const { data } = await supabase.auth.getSession();
     const user = data?.session?.user;
 
-    if (user) {
-        setUser(user);
-    }
+    if (user) setUser(user);
 }
 
 /* =========================
@@ -25,18 +40,5 @@ supabase.auth.onAuthStateChange((_event, session) => {
 
     setUser(user);
 });
-
-/* =========================
-   SET USER
-========================= */
-function setUser(user) {
-
-    window.currentUser = user;
-    window.setCurrentUser?.(user);
-
-    if (user) {
-        loadCloudConversations(user.id);
-    }
-}
 
 boot();
