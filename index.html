@@ -39,47 +39,52 @@
   <div id="main-app" class="locked min-h-screen flex">
     <!-- Sidebar -->
     <div class="w-72 bg-zinc-900 border-r border-zinc-800 p-6">
-      <h1 class="text-2xl font-bold mb-8 flex items-center gap-2">🪐 CosmoTools</h1>
+      <h1 class="text-2xl font-bold mb-8">🪐 CosmoTools</h1>
       
-      <div onclick="openChat()" class="p-4 bg-violet-600 hover:bg-violet-500 rounded-2xl mb-8 cursor-pointer text-center font-medium">
-        💬 Open AI Chat
+      <div onclick="openGeneralChat()" class="p-4 bg-violet-600 hover:bg-violet-500 rounded-2xl mb-8 cursor-pointer text-center font-medium">
+        💬 General AI Chat
       </div>
 
       <h3 class="text-sm uppercase tracking-widest text-zinc-500 mb-3">AI Tools</h3>
       <div id="sidebar-tools" class="space-y-1"></div>
     </div>
 
-    <!-- Tools Dashboard -->
+    <!-- Tools Grid -->
     <div class="flex-1 p-8 overflow-y-auto">
       <h2 class="text-3xl font-bold mb-8">AI Tools</h2>
       <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
   </div>
 
-  <!-- Tool Form Modal -->
-  <div id="tool-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
-    <div class="bg-zinc-900 rounded-3xl p-8 max-w-md w-full">
-      <h2 id="modal-title" class="text-2xl font-bold mb-6"></h2>
-      <div id="form-fields" class="space-y-4"></div>
-      <div class="flex gap-3 mt-8">
-        <button onclick="closeToolModal()" class="flex-1 py-4 border border-zinc-700 rounded-2xl">Cancel</button>
-        <button onclick="submitToolForm()" class="flex-1 py-4 bg-violet-600 rounded-2xl">Generate with AI</button>
+  <!-- Tool Chat Modal -->
+  <div id="tool-chat-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
+    <div class="bg-zinc-900 w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col">
+      <div class="p-6 border-b flex justify-between items-center">
+        <h2 id="tool-chat-title" class="text-xl font-semibold"></h2>
+        <button onclick="closeToolChat()" class="text-3xl">×</button>
+      </div>
+      <div id="tool-chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
+      <div class="p-6 border-t border-zinc-700">
+        <div class="flex gap-3">
+          <input id="tool-user-input" type="text" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5" placeholder="Type your request...">
+          <button onclick="sendToolMessage()" class="bg-violet-600 px-10 rounded-3xl">Send</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Chat Modal -->
-  <div id="chat-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
+  <!-- General Chat Modal -->
+  <div id="general-chat-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
     <div class="bg-zinc-900 w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col">
       <div class="p-6 border-b flex justify-between items-center">
-        <h2 class="text-xl font-semibold">CosmoAI Chat</h2>
-        <button onclick="closeChat()" class="text-3xl">×</button>
+        <h2 class="text-xl font-semibold">General AI Chat</h2>
+        <button onclick="closeGeneralChat()" class="text-3xl">×</button>
       </div>
-      <div id="chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
+      <div id="general-chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
       <div class="p-6 border-t border-zinc-700">
         <div class="flex gap-3">
-          <input id="user-input" type="text" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5" placeholder="Type your message...">
-          <button onclick="sendMessage()" class="bg-violet-600 px-10 rounded-3xl">Send</button>
+          <input id="general-user-input" type="text" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5" placeholder="Ask anything...">
+          <button onclick="sendGeneralMessage()" class="bg-violet-600 px-10 rounded-3xl">Send</button>
         </div>
       </div>
     </div>
@@ -88,85 +93,103 @@
   <script>
     let isUnlocked = false;
     const correctPasswords = ["cosmo-24", "cosmo-25", "cosmo-26"];
-    let currentTool = null;
 
     const tools = [
-      { title: "Business Proposal", icon: "📝", fields: ["Client Name", "Industry", "Project Details"] },
-      { title: "Coding Assistant", icon: "💻", fields: ["Language", "What to build", "Key features"] },
-      { title: "School Helper", icon: "📚", fields: ["Subject", "Topic", "Specific Question"] },
-      { title: "Marketing Strategy", icon: "📢", fields: ["Product/Service", "Target Audience", "Goals"] },
-      { title: "Research Assistant", icon: "🔍", fields: ["Topic", "Time Period", "Focus Areas"] },
-      { title: "Resume Builder", icon: "📄", fields: ["Full Name", "Job Title", "Years of Experience", "Key Skills"] },
-      { title: "Email Writer", icon: "✉️", fields: ["Recipient", "Purpose", "Tone"] }
+      { title: "Business Proposal", icon: "📝", base: "Write a professional business proposal" },
+      { title: "Coding Assistant", icon: "💻", base: "Help me write code" },
+      { title: "School Helper", icon: "📚", base: "Help me with school work" },
+      { title: "Marketing Strategy", icon: "📢", base: "Create marketing strategy" },
+      { title: "Research Assistant", icon: "🔍", base: "Research this topic" },
+      { title: "Resume Builder", icon: "📄", base: "Help me build a resume" },
+      { title: "Email Writer", icon: "✉️", base: "Write a professional email" }
     ];
 
     function loadTools() {
-      // Grid
       const grid = document.getElementById('tools-grid');
-      grid.innerHTML = tools.map(t => `
-        <div onclick="selectTool('${t.title}')" class="tool-card bg-zinc-900 border border-zinc-800 hover:border-violet-500 p-8 rounded-3xl cursor-pointer">
+      const sidebar = document.getElementById('sidebar-tools');
+
+      const html = tools.map(t => `
+        <div onclick="openToolChat('${t.title}', '${t.base}')" class="tool-card bg-zinc-900 border border-zinc-800 hover:border-violet-500 p-8 rounded-3xl cursor-pointer">
           <div class="text-5xl mb-6">${t.icon}</div>
           <h3 class="text-xl font-semibold">${t.title}</h3>
         </div>
       `).join('');
 
-      // Sidebar
-      const sidebar = document.getElementById('sidebar-tools');
+      grid.innerHTML = html;
       sidebar.innerHTML = tools.map(t => `
-        <div onclick="selectTool('${t.title}')" class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center gap-3">
-          <span>${t.icon}</span> <span>${t.title}</span>
+        <div onclick="openToolChat('${t.title}', '${t.base}')" class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center gap-3">
+          <span>${t.icon}</span><span>${t.title}</span>
         </div>
       `).join('');
     }
 
-    function selectTool(title) {
-      if (!isUnlocked) {
-        showPaywall();
-        return;
-      }
-      currentTool = tools.find(t => t.title === title);
-      document.getElementById('modal-title').textContent = title;
-      renderFormFields();
-      document.getElementById('tool-modal').classList.remove('hidden');
-    }
-
-    function renderFormFields() {
-      const container = document.getElementById('form-fields');
-      container.innerHTML = currentTool.fields.map(field => `
-        <div>
-          <label class="block text-sm text-zinc-400 mb-1">${field}</label>
-          <input type="text" id="field-${field.replace(/\s+/g, '')}" 
-                 class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-3" placeholder="Enter ${field.toLowerCase()}...">
-        </div>
-      `).join('');
-    }
-
-    function submitToolForm() {
-      let prompt = currentTool.basePrompt || `Create a ${currentTool.title.toLowerCase()}. Here are the details:\n\n`;
-
-      currentTool.fields.forEach(field => {
-        const value = document.getElementById(`field-${field.replace(/\s+/g, '')}`).value || "Not provided";
-        prompt += `${field}: ${value}\n`;
-      });
-
-      closeToolModal();
-      openChat();
-      setTimeout(() => {
-        document.getElementById('user-input').value = prompt;
-      }, 300);
-    }
-
-    function closeToolModal() {
-      document.getElementById('tool-modal').classList.add('hidden');
-    }
-
-    function openChat() {
+    function openToolChat(title, base) {
       if (!isUnlocked) return showPaywall();
-      document.getElementById('chat-modal').classList.remove('hidden');
+      document.getElementById('tool-chat-title').textContent = title;
+      document.getElementById('tool-chat-window').innerHTML = '';
+      document.getElementById('tool-chat-modal').classList.remove('hidden');
+      addToolMessage('ai', `Hello! I'm ready to help with your ${title.toLowerCase()}. What would you like to do?`);
     }
 
-    function closeChat() {
-      document.getElementById('chat-modal').classList.add('hidden');
+    function sendToolMessage() {
+      const input = document.getElementById('tool-user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addToolMessage('user', text);
+      input.value = '';
+
+      const typingId = addToolTyping();
+
+      // Simulate AI response (you can connect to /api/groq later)
+      setTimeout(() => {
+        removeToolTyping(typingId);
+        addToolMessage('ai', "Here's a detailed response based on your request...");
+      }, 1200);
+    }
+
+    function addToolMessage(role, content) {
+      const win = document.getElementById('tool-chat-window');
+      const div = document.createElement('div');
+      div.className = `message ${role === 'user' ? 'user-message' : 'ai-message'}`;
+      div.textContent = content;
+      win.appendChild(div);
+      win.scrollTop = win.scrollHeight;
+    }
+
+    function addToolTyping() {
+      const id = 't-' + Date.now();
+      const win = document.getElementById('tool-chat-window');
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = "message ai-message";
+      div.textContent = "Thinking...";
+      win.appendChild(div);
+      win.scrollTop = win.scrollHeight;
+      return id;
+    }
+
+    function removeToolTyping(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function openGeneralChat() {
+      if (!isUnlocked) return showPaywall();
+      document.getElementById('general-chat-modal').classList.remove('hidden');
+    }
+
+    function sendGeneralMessage() {
+      // Similar to tool chat - you can connect to groq
+      alert("General chat connected to Groq (add your fetch logic here)");
+    }
+
+    function closeToolChat() {
+      document.getElementById('tool-chat-modal').classList.add('hidden');
+    }
+
+    function closeGeneralChat() {
+      document.getElementById('general-chat-modal').classList.add('hidden');
     }
 
     function checkPassword() {
@@ -184,66 +207,7 @@
       if (!isUnlocked) document.getElementById('paywall').classList.remove('hidden');
     }
 
-    async function sendMessage() {
-      if (!isUnlocked) return;
-
-      const input = document.getElementById('user-input');
-      const text = input.value.trim();
-      if (!text) return;
-
-      addMessage('user', text);
-      input.value = '';
-
-      const typingId = addTyping();
-
-      try {
-        const res = await fetch('/api/groq', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: text })
-        });
-        const data = await res.json();
-        removeTyping(typingId);
-        addMessage('ai', data.reply);
-      } catch(e) {
-        removeTyping(typingId);
-        addMessage('ai', "Sorry, connection error.");
-      }
-    }
-
-    function addMessage(role, content) {
-      const win = document.getElementById('chat-window');
-      const div = document.createElement('div');
-      div.className = `message ${role === 'user' ? 'user-message' : 'ai-message'}`;
-      div.textContent = content;
-      win.appendChild(div);
-      win.scrollTop = win.scrollHeight;
-    }
-
-    function addTyping() {
-      const id = 'typing-' + Date.now();
-      const win = document.getElementById('chat-window');
-      const div = document.createElement('div');
-      div.id = id;
-      div.className = "message ai-message";
-      div.textContent = "CosmoAI is thinking...";
-      win.appendChild(div);
-      win.scrollTop = win.scrollHeight;
-      return id;
-    }
-
-    function removeTyping(id) {
-      const el = document.getElementById(id);
-      if (el) el.remove();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadTools();
-      const input = document.getElementById('user-input');
-      input.addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendMessage();
-      });
-    });
+    document.addEventListener('DOMContentLoaded', loadTools);
   </script>
 </body>
 </html>
