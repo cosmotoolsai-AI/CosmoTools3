@@ -7,11 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .locked { filter: blur(8px); pointer-events: none; }
-    .message { padding: 14px 20px; border-radius: 18px; max-width: 75%; margin-bottom: 12px; }
-    .user-message { background: #7c3aed; margin-left: auto; color: white; }
-    .ai-message { background: #27272a; margin-right: auto; }
-    .sidebar-item { transition: all 0.2s; }
-    .sidebar-item:hover { background-color: #27272a; }
+    .tool-card { transition: all 0.3s; }
+    .tool-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
   </style>
 </head>
 <body class="bg-zinc-950 text-white">
@@ -20,60 +17,70 @@
   <div id="paywall" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
     <div class="bg-zinc-900 rounded-3xl p-10 max-w-lg w-full text-center">
       <h1 class="text-4xl font-bold mb-2">🪐 CosmoTools</h1>
-      <p class="text-zinc-400 mb-8">Professional AI Workspace</p>
+      <p class="text-zinc-400 mb-8">Unlock all AI tools</p>
 
       <div class="space-y-4 mb-10">
-        <a href="https://cosmotools.gumroad.com/l/tfyjnl" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">Monthly Plan — $4.99</a>
+        <a href="https://cosmotools.gumroad.com/l/tfyjnl" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">Monthly — $4.99</a>
         <a href="https://cosmotools.gumroad.com/l/pkawh" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left relative">
-          6 Months Plan — $12.99 
-          <span class="absolute top-3 right-4 bg-yellow-400 text-black text-xs px-3 py-1 rounded-full font-bold">POPULAR</span>
+          6 Months — $12.99 <span class="absolute top-3 right-4 bg-yellow-400 text-black text-xs px-3 py-1 rounded-full font-bold">POPULAR</span>
         </a>
-        <a href="https://cosmotools.gumroad.com/l/qkgoew" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">Yearly Plan — $24.99</a>
+        <a href="https://cosmotools.gumroad.com/l/qkgoew" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">Yearly — $24.99</a>
       </div>
 
-      <div class="mt-8">
-        <p class="text-sm text-zinc-400 mb-3">Already purchased? Enter password from your Gumroad receipt</p>
-        <input id="password-input" type="password" placeholder="Enter your password" 
-               class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-center focus:outline-none focus:border-violet-500">
-        <button onclick="checkPassword()" 
-                class="mt-4 w-full bg-violet-600 hover:bg-violet-500 py-4 rounded-2xl font-semibold">
-          Unlock Full Access
-        </button>
+      <div>
+        <p class="text-sm text-zinc-400 mb-3">Have a password from your Gumroad receipt?</p>
+        <input id="password-input" type="password" placeholder="Enter password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-center">
+        <button onclick="checkPassword()" class="mt-4 w-full bg-violet-600 hover:bg-violet-500 py-4 rounded-2xl font-semibold">Unlock All Tools</button>
       </div>
     </div>
   </div>
 
-  <!-- Main App -->
-  <div id="main-app" class="locked min-h-screen flex">
-    <!-- Sidebar -->
-    <div class="w-72 bg-zinc-900 border-r border-zinc-800 p-6 overflow-y-auto">
-      <h1 class="text-2xl font-bold mb-8 flex items-center gap-2">🪐 CosmoTools</h1>
-      
-      <div class="space-y-1 text-zinc-300">
-        <div onclick="useTool('Write a professional business proposal for my client in the tech industry.')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📝 Business Proposal</div>
-        <div onclick="useTool('Help me write clean and efficient code for: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">💻 Coding Assistant</div>
-        <div onclick="useTool('Explain this school topic like I\'m 15 years old: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📚 School Help</div>
-        <div onclick="useTool('Create a detailed marketing strategy for: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📢 Marketing</div>
-        <div onclick="useTool('Research and summarize the latest information about: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">🔬 Research</div>
-        <div onclick="useTool('Help me write a professional email about: ')" class="sidebar-item p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📧 Email Writer</div>
+  <!-- Tools Dashboard -->
+  <div id="main-app" class="locked min-h-screen">
+    <div class="max-w-6xl mx-auto p-8">
+      <div class="flex justify-between items-center mb-10">
+        <h1 class="text-4xl font-bold flex items-center gap-3">🪐 CosmoTools</h1>
+        <button onclick="showPaywall()" class="bg-violet-600 px-6 py-3 rounded-2xl">Unlock Full Access</button>
       </div>
+
+      <h2 class="text-2xl font-semibold mb-6">AI Tools</h2>
+      <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
+  </div>
 
-    <!-- Chat Area -->
-    <div class="flex-1 flex flex-col">
-      <header class="h-16 border-b border-zinc-800 bg-zinc-900 px-8 flex items-center justify-between">
-        <h2 class="text-xl font-semibold">AI Workspace</h2>
-        <button onclick="showPaywall()" class="text-sm text-violet-400 hover:text-violet-300">Upgrade / Unlock</button>
-      </header>
+  <!-- Tool Input Modal -->
+  <div id="tool-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
+    <div class="bg-zinc-900 rounded-3xl p-8 max-w-lg w-full">
+      <h2 id="modal-title" class="text-2xl font-bold mb-6"></h2>
+      
+      <div class="space-y-6">
+        <button onclick="useGuidedMode()" class="w-full p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">
+          <div class="font-semibold">Guided Form</div>
+          <div class="text-sm text-zinc-400">Answer a few questions for better results</div>
+        </button>
 
+        <button onclick="useCustomMode()" class="w-full p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">
+          <div class="font-semibold">Custom Prompt</div>
+          <div class="text-sm text-zinc-400">Type exactly what you want</div>
+        </button>
+      </div>
+
+      <button onclick="closeToolModal()" class="mt-6 w-full py-3 text-zinc-400">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Chat Modal -->
+  <div id="chat-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
+    <div class="bg-zinc-900 w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col">
+      <div class="p-6 border-b border-zinc-700 flex justify-between">
+        <h2 class="text-xl font-semibold">CosmoAI</h2>
+        <button onclick="closeChat()" class="text-3xl">×</button>
+      </div>
       <div id="chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
-
-      <div class="p-6 border-t border-zinc-800 bg-zinc-900">
-        <div class="max-w-3xl mx-auto flex gap-3">
-          <input id="user-input" type="text" 
-                 class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5 text-lg focus:outline-none focus:border-violet-500"
-                 placeholder="Ask CosmoAI anything...">
-          <button onclick="sendMessage()" class="bg-violet-600 px-10 rounded-3xl font-medium">Send</button>
+      <div class="p-6 border-t border-zinc-700">
+        <div class="flex gap-3">
+          <input id="user-input" type="text" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5 focus:outline-none" placeholder="Type your message...">
+          <button onclick="sendMessage()" class="bg-violet-600 px-10 rounded-3xl">Send</button>
         </div>
       </div>
     </div>
@@ -82,6 +89,68 @@
   <script>
     let isUnlocked = false;
     const correctPasswords = ["cosmo-24", "cosmo-25", "cosmo-26"];
+    let currentToolPrompt = "";
+
+    const tools = [
+      { title: "Business Proposal Writer", icon: "📝", basePrompt: "Write a professional business proposal for " },
+      { title: "Coding Assistant", icon: "💻", basePrompt: "Help me write clean code for: " },
+      { title: "School & Study Helper", icon: "📚", basePrompt: "Help me with this school assignment: " },
+      { title: "Marketing Strategy", icon: "📢", basePrompt: "Create a complete marketing strategy for: " },
+      { title: "Research Assistant", icon: "🔍", basePrompt: "Research and give a detailed summary on: " },
+      { title: "Professional Email Writer", icon: "✉️", basePrompt: "Write a professional email about: " },
+      { title: "Content Generator", icon: "📖", basePrompt: "Generate high-quality content about: " },
+      { title: "Resume Builder", icon: "📄", basePrompt: "Help me create or improve my resume for: " }
+    ];
+
+    function loadTools() {
+      const grid = document.getElementById('tools-grid');
+      grid.innerHTML = tools.map(tool => `
+        <div onclick="selectTool('${tool.title}', '${tool.basePrompt}')" 
+             class="tool-card bg-zinc-900 border border-zinc-800 hover:border-violet-500 p-8 rounded-3xl cursor-pointer">
+          <div class="text-5xl mb-6">${tool.icon}</div>
+          <h3 class="text-xl font-semibold">${tool.title}</h3>
+        </div>
+      `).join('');
+    }
+
+    function selectTool(title, basePrompt) {
+      if (!isUnlocked) {
+        showPaywall();
+        return;
+      }
+      currentToolPrompt = basePrompt;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('tool-modal').classList.remove('hidden');
+    }
+
+    function useGuidedMode() {
+      closeToolModal();
+      openChat();
+      setTimeout(() => {
+        document.getElementById('user-input').value = currentToolPrompt + " [Please fill in details]";
+      }, 400);
+    }
+
+    function useCustomMode() {
+      closeToolModal();
+      openChat();
+      setTimeout(() => {
+        document.getElementById('user-input').value = currentToolPrompt;
+      }, 400);
+    }
+
+    function closeToolModal() {
+      document.getElementById('tool-modal').classList.add('hidden');
+    }
+
+    function openChat() {
+      document.getElementById('chat-modal').classList.remove('hidden');
+      document.getElementById('user-input').focus();
+    }
+
+    function closeChat() {
+      document.getElementById('chat-modal').classList.add('hidden');
+    }
 
     function checkPassword() {
       const input = document.getElementById('password-input').value.trim();
@@ -89,9 +158,8 @@
         isUnlocked = true;
         document.getElementById('paywall').classList.add('hidden');
         document.getElementById('main-app').classList.remove('locked');
-        addMessage('ai', '✅ Full access unlocked! Welcome to CosmoTools. How can I help you today?');
       } else {
-        alert("Incorrect password. Please check your Gumroad receipt.");
+        alert("Incorrect password. Check your Gumroad receipt.");
       }
     }
 
@@ -99,20 +167,8 @@
       if (!isUnlocked) document.getElementById('paywall').classList.remove('hidden');
     }
 
-    function useTool(promptStart) {
-      if (!isUnlocked) {
-        showPaywall();
-        return;
-      }
-      document.getElementById('user-input').value = promptStart;
-      sendMessage();
-    }
-
     async function sendMessage() {
-      if (!isUnlocked) {
-        showPaywall();
-        return;
-      }
+      if (!isUnlocked) return;
 
       const input = document.getElementById('user-input');
       const text = input.value.trim();
@@ -134,7 +190,7 @@
         addMessage('ai', data.reply);
       } catch(e) {
         removeTyping(typingId);
-        addMessage('ai', "Sorry, connection issue.");
+        addMessage('ai', "Sorry, I'm having trouble.");
       }
     }
 
@@ -164,11 +220,13 @@
       if (el) el.remove();
     }
 
-    // Enter Key Fix
-    document.getElementById('user-input').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTools();
+      const input = document.getElementById('user-input');
+      input.addEventListener('keypress', e => {
+        if (e.key === 'Enter') sendMessage();
+      });
     });
   </script>
 </body>
