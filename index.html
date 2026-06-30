@@ -1,159 +1,82 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CosmoTools • AI Workspace</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/chat.css">
-  <link rel="stylesheet" href="css/sidebar.css">
-  <link rel="stylesheet" href="css/responsive.css">
   <style>
     .message { max-width: 80%; padding: 14px 20px; border-radius: 20px; }
-    .user-message { background: rgb(124 58 237); margin-left: auto; border-bottom-right-radius: 4px; }
-    .ai-message { background: rgb(39 39 42); margin-right: auto; border-bottom-left-radius: 4px; }
-    .history-item { transition: all 0.2s; }
-    .history-item:hover { background-color: rgb(63 63 70); }
+    .user-message { background: rgb(124 58 237); margin-left: auto; }
+    .ai-message { background: rgb(39 39 42); margin-right: auto; }
   </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 overflow-hidden">
-  <div class="flex h-screen">
-    <!-- Sidebar -->
-    <div id="sidebar" class="w-72 bg-zinc-900 border-r border-zinc-800 flex flex-col"></div>
+<body class="bg-zinc-950 text-zinc-100">
+  <div class="flex h-screen" id="app">
 
-    <!-- Main Area -->
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-72 bg-zinc-900 border-r border-zinc-800"></div>
+
+    <!-- Main -->
     <div class="flex-1 flex flex-col">
-      <!-- Top Header -->
       <header class="h-14 border-b border-zinc-800 bg-zinc-900 px-6 flex items-center justify-between">
         <div class="flex items-center gap-3">
           <span class="text-2xl">🪐</span>
-          <h1 class="text-xl font-semibold">CosmoTools</h1>
+          <h1 class="text-xl font-bold">CosmoTools</h1>
         </div>
-        <div class="flex items-center gap-4">
-          <button onclick="toggleSearch()" 
-                  class="px-4 py-1.5 bg-zinc-800 hover:bg-zinc-700 rounded-xl text-sm flex items-center gap-2">
-            <span>⌘</span> Search
-          </button>
-          <button onclick="showLoginModal()" 
-                  class="px-5 py-1.5 bg-violet-600 hover:bg-violet-500 rounded-xl font-medium">
-            Sign in
-          </button>
-        </div>
+        <button onclick="showPricing()" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 rounded-xl">Upgrade</button>
       </header>
 
-      <div class="flex flex-1 overflow-hidden">
-        <!-- Chat Container -->
-        <div class="flex-1 flex flex-col" id="chat-container">
-          <!-- Welcome Screen -->
-          <div id="welcome" class="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div class="text-6xl mb-6">🪐</div>
-            <h2 class="text-4xl font-bold mb-3">What are we building today?</h2>
-            <p class="text-zinc-400 max-w-md">Ask CosmoAI anything. Your conversations are saved automatically.</p>
+      <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex flex-col p-6" id="chat-area">
+          <div id="welcome" class="flex-1 flex flex-col items-center justify-center text-center">
+            <h2 class="text-4xl font-bold mb-4">What do you want to accomplish today?</h2>
           </div>
+          <div id="chat-window" class="flex-1 overflow-y-auto space-y-6 hidden"></div>
 
-          <!-- Chat Window -->
-          <div id="chat-window" class="flex-1 overflow-y-auto p-6 space-y-6 hidden bg-zinc-950"></div>
-
-          <!-- Input Area -->
-          <div class="p-6 border-t border-zinc-800 bg-zinc-900">
-            <div class="max-w-3xl mx-auto">
-              <div class="relative">
-                <input id="user-input" 
-                       type="text"
-                       class="w-full bg-zinc-800 border border-zinc-700 focus:border-violet-500 rounded-3xl px-6 py-5 text-lg focus:outline-none"
-                       placeholder="Message CosmoAI... (Press Enter)">
-                <button onclick="sendMessage()" 
-                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-500 w-11 h-11 rounded-2xl flex items-center justify-center text-xl">
-                  ↑
-                </button>
-              </div>
-              <p class="text-center text-zinc-500 text-xs mt-3">Conversations are saved in your browser</p>
+          <div class="mt-4">
+            <div class="relative max-w-3xl mx-auto">
+              <input id="user-input" type="text" 
+                     class="w-full bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5 text-lg focus:outline-none focus:border-violet-500"
+                     placeholder="Ask CosmoAI anything...">
+              <button onclick="sendMessage()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-violet-600 w-10 h-10 rounded-2xl">↑</button>
             </div>
           </div>
         </div>
 
-        <!-- Right Panel: Workflows + History -->
-        <div class="w-80 border-l border-zinc-800 bg-zinc-900 flex flex-col">
-          <!-- Workflows -->
-          <div class="p-6 border-b border-zinc-800">
-            <h3 class="font-semibold text-violet-400 mb-4">Popular Workflows</h3>
-            <div id="workflows-grid" class="space-y-3"></div>
-          </div>
-
-          <!-- Conversation History -->
-          <div class="flex-1 flex flex-col">
-            <div class="p-6 pb-3 flex justify-between items-center border-b border-zinc-800">
-              <h3 class="font-semibold">Recent Chats</h3>
-              <button onclick="clearHistory()" class="text-xs text-zinc-500 hover:text-red-400">Clear</button>
-            </div>
-            <div id="history-list" class="flex-1 overflow-y-auto p-3 space-y-1"></div>
-          </div>
+        <!-- Right Panel -->
+        <div class="w-80 bg-zinc-900 border-l border-zinc-800 p-6 overflow-y-auto">
+          <h3 class="font-semibold mb-4">Popular Tools</h3>
+          <div id="workflows-grid" class="space-y-3"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Login Modal -->
-  <div id="login-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="bg-zinc-900 rounded-3xl w-full max-w-md p-8">
-      <h2 class="text-2xl font-bold mb-6">Sign in to CosmoTools</h2>
-      <p class="text-zinc-400 mb-8">Full accounts + cloud sync coming soon.</p>
-      <button onclick="fakeLogin()" 
-              class="w-full py-4 bg-white text-black rounded-2xl font-semibold mb-3">
-        Continue with Google
-      </button>
-      <button onclick="hideLoginModal()" 
-              class="w-full py-3 text-zinc-400 hover:text-white">
-        Close
-      </button>
+  <!-- Pricing Modal -->
+  <div id="pricing-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
+    <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-lg">
+      <h2 class="text-3xl font-bold text-center mb-8">Choose Your Plan</h2>
+      
+      <div class="space-y-4">
+        <a href="https://cosmotools.gumroad.com/l/tfyjnl" target="_blank" class="block p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer">
+          <div class="flex justify-between"><span class="font-semibold">Monthly</span><span class="font-bold">$4.99</span></div>
+        </a>
+        <a href="https://cosmotools.gumroad.com/l/pkawh" target="_blank" class="block p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer relative">
+          <div class="flex justify-between"><span class="font-semibold">6 Months</span><span class="font-bold">$12.99</span></div>
+          <span class="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-3 py-1 rounded-full font-bold">MOST POPULAR</span>
+        </a>
+        <a href="https://cosmotools.gumroad.com/l/qkgoew" target="_blank" class="block p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer">
+          <div class="flex justify-between"><span class="font-semibold">1 Year</span><span class="font-bold">$24.99</span></div>
+        </a>
+      </div>
+
+      <button onclick="hidePricing()" class="mt-6 w-full py-3 text-zinc-400">Close</button>
     </div>
   </div>
 
-  <script type="module">
-    import { initSidebar } from './js/sidebar.js';
-    import { loadWorkflows, useWorkflow } from './js/workflows.js';
-    import { initSearch } from './js/search.js';
-
-    window.toggleSearch = () => {
-      const q = prompt("Search workflows or type your request:");
-      if (q) {
-        const results = window.filterWorkflows ? window.filterWorkflows(q) : [];
-        if (results.length > 0) useWorkflow(results[0].title, results[0].prompt);
-        else {
-          document.getElementById('user-input').value = q;
-          sendMessage();
-        }
-      }
-    };
-
-    window.showLoginModal = () => document.getElementById('login-modal').classList.remove('hidden');
-    window.hideLoginModal = () => document.getElementById('login-modal').classList.add('hidden');
-    window.fakeLogin = () => {
-      alert("✅ Demo login successful! (Full auth coming soon)");
-      hideLoginModal();
-    };
-
-    // Make functions global
-    window.useWorkflow = useWorkflow;
-
-    // Initialize everything
-    document.addEventListener('DOMContentLoaded', () => {
-      initSidebar();
-      loadWorkflows();
-      initSearch();
-      loadHistory();
-
-      const input = document.getElementById('user-input');
-      input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
-      });
-    });
-  </script>
-
-  <script src="js/utils.js"></script>
-  <script src="js/chat.js"></script>
-  <script src="js/workflows.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>

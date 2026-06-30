@@ -6,9 +6,7 @@ export default async function handler(req, res) {
   const groqKey = process.env.GROQ_API_KEY;
 
   if (!groqKey) {
-    return res.status(200).json({ 
-      reply: "Demo mode: GROQ_API_KEY is not set in Vercel Environment Variables." 
-    });
+    return res.status(200).json({ reply: "Demo mode: Groq API key not configured." });
   }
 
   try {
@@ -23,24 +21,22 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: message }],
-        temperature: 0.7,
-        max_tokens: 1024
+        temperature: 0.85,
+        max_tokens: 1200
       })
     });
 
     const data = await response.json();
 
     if (data.error) {
-      return res.status(200).json({ reply: "Groq Error: " + data.error.message });
+      return res.status(200).json({ reply: "Error: " + data.error.message });
     }
 
     res.status(200).json({ 
-      reply: data.choices?.[0]?.message?.content || "I got your message!" 
+      reply: data.choices?.[0]?.message?.content || "I received your request!" 
     });
 
   } catch (error) {
-    res.status(200).json({ 
-      reply: "Sorry, I'm having trouble connecting. Please try again." 
-    });
+    res.status(200).json({ reply: "Sorry, connection issue. Try again." });
   }
 }
