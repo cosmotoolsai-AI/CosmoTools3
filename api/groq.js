@@ -1,12 +1,8 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
   const groqKey = process.env.GROQ_API_KEY;
 
   if (!groqKey) {
-    return res.status(200).json({ reply: "Demo mode: Groq API key not configured." });
+    return res.status(200).json({ reply: "Error: Groq API key is not set in Vercel." });
   }
 
   try {
@@ -21,22 +17,18 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: message }],
-        temperature: 0.85,
-        max_tokens: 1200
+        temperature: 0.8,
+        max_tokens: 800
       })
     });
 
     const data = await response.json();
 
-    if (data.error) {
-      return res.status(200).json({ reply: "Error: " + data.error.message });
-    }
-
     res.status(200).json({ 
-      reply: data.choices?.[0]?.message?.content || "I received your request!" 
+      reply: data.choices?.[0]?.message?.content || "I received your message. How else can I help?" 
     });
 
   } catch (error) {
-    res.status(200).json({ reply: "Sorry, connection issue. Try again." });
+    res.status(200).json({ reply: "Sorry, I'm having trouble connecting to the AI right now. Please try again." });
   }
 }
