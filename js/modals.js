@@ -1,48 +1,56 @@
-function closeModal(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("hidden");
-}
-
-function openModal(id) {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove("hidden");
-}
-
 document.addEventListener("DOMContentLoaded", () => {
 
-    // LOGIN BUTTON
-    document.getElementById("loginBtn")?.addEventListener("click", () => {
-        openModal("loginModal");
+    const loginModal = document.getElementById("loginModal");
+    const signupModal = document.getElementById("signupModal");
+
+    const loginBtn = document.getElementById("loginBtn");
+    const openSignup = document.getElementById("openSignup");
+    const openLogin = document.getElementById("openLogin");
+
+    const closeButtons = document.querySelectorAll(".close-modal");
+
+    function open(modal) {
+        modal?.classList.remove("hidden");
+    }
+
+    function close(modal) {
+        modal?.classList.add("hidden");
+    }
+
+    // OPEN LOGIN
+    loginBtn?.addEventListener("click", () => {
+        open(loginModal);
     });
 
     // SWITCH TO SIGNUP
-    document.getElementById("openSignup")?.addEventListener("click", (e) => {
+    openSignup?.addEventListener("click", (e) => {
         e.preventDefault();
-        closeModal("loginModal");
-        openModal("signupModal");
+        close(loginModal);
+        open(signupModal);
     });
 
     // SWITCH TO LOGIN
-    document.getElementById("openLogin")?.addEventListener("click", (e) => {
+    openLogin?.addEventListener("click", (e) => {
         e.preventDefault();
-        closeModal("signupModal");
-        openModal("loginModal");
+        close(signupModal);
+        open(loginModal);
     });
 
-    // CLOSE BUTTONS (THIS FIXES YOUR MAIN ISSUE)
-    document.querySelectorAll(".close-modal").forEach(btn => {
+    // CLOSE X BUTTON (THIS WAS BROKEN BEFORE)
+    closeButtons.forEach(btn => {
         btn.addEventListener("click", () => {
-            closeModal("loginModal");
-            closeModal("signupModal");
+            close(loginModal);
+            close(signupModal);
         });
     });
 
     // CLICK OUTSIDE MODAL CLOSE
-    document.querySelectorAll(".modal").forEach(modal => {
-        modal.addEventListener("click", (e) => {
+    [loginModal, signupModal].forEach(modal => {
+        modal?.addEventListener("click", (e) => {
             if (e.target === modal) {
-                modal.classList.add("hidden");
+                close(modal);
             }
         });
     });
+
 });
