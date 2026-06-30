@@ -1,24 +1,109 @@
-const workflows = [
-  { icon: "📝", title: "Write Proposal", prompt: "Write a professional business proposal for " },
-  { icon: "💻", title: "Coding Help", prompt: "Help me write code for: " },
-  { icon: "📚", title: "School Assignment", prompt: "Help me with this school assignment: " },
-  { icon: "📊", title: "Business Plan", prompt: "Create a business plan for: " },
-  { icon: "📧", title: "Professional Email", prompt: "Write a professional email about: " },
-  { icon: "🔍", title: "Research", prompt: "Research and summarize: " }
-];
+let workflowsData = [];
 
-window.loadWorkflows = function() {
-  const container = document.getElementById('workflows-grid');
-  container.innerHTML = workflows.map(w => `
-    <div onclick="useWorkflow('${w.prompt}')" 
-         class="p-4 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer transition-colors">
-      <div class="text-2xl mb-2">${w.icon}</div>
-      <div class="font-medium">${w.title}</div>
-    </div>
-  `).join('');
-};
+/* =========================
+   LOAD WORKFLOWS
+========================= */
+async function loadWorkflows() {
+    try {
+        const res = await fetch("/data/workflows.json");
+        workflowsData = await res.json();
 
-window.useWorkflow = function(prompt) {
-  document.getElementById('user-input').value = prompt;
-  sendMessage();
-};
+        renderWorkflows(workflowsData);
+
+    } catch (err) {
+        console.error("Failed to load workflows:", err);
+    }
+}
+
+/* =========================
+   RENDER WORKFLOWS GRID
+========================= */
+function renderWorkflows(data) {
+
+    const grid = document.getElementById("workflowGrid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    data.forEach(workflow => {
+
+        const card = document.createElement("div");
+        card.className = "card workflow-card";
+
+        card.innerHTML = `
+            <div style="font-size:26px">${workflow.icon}</div>
+            <h3>${workflow.title}</h3>
+            <p>${workflow.description}</p>
+            <button class="run-btn">Run →</button>
+        `;
+
+        /* =========================
+           CLICK → FILL PROMPT
+        ========================= */
+        card.addEventListener("click", (e) => {
+
+            // prevent double trigger when clicking button
+            if (e.target.classList.contains("run-btn")) return;
+
+            const input = document.getElementById("heroInput");
+            if (!input) return;
+
+            input.value = workflow.prompt + " ";
+            input.focus();
+        });
+
+        /* =========================
+           RUN DIRECTLY → AI CHAT
+        ========================= */
+        card.querySelector(".run-btn").addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            const input = document.getElementById("heroInput");
+            if (!input) return;
+
+            input.value = workflow.prompt + " ";
+            input.focus();
+
+            // auto-send if chat system exists
+            if (typeof handleMessage === "function") {
+                handleMessage(input);
+            }
+        });
+
+        grid.appendChild(card);
+    });
+}
+
+/* =========================
+   OPTIONAL: SEARCH WORKFLOWS
+========================= */
+function searchWorkflows(query) {
+
+    if (!query) {
+        renderWorkflows(workflowsData);
+        return;
+    }
+
+    const filtered = workflowsData.filter(w =>
+        w.title.toLowerCase().includes(query.toLowerCase()) ||
+        w.description.toLowerCase().includes(query.toLowerCase())
+    );
+
+    renderWorkflows(filtered);
+}
+
+/* =========================
+   INIT
+========================= */
+document.addEventListener("DOMContentLoaded", () => {
+
+    loadWorkflows();
+
+    // optional search hook (if you add input later)
+    const searchInput = document.getElementById("workflowSearch");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            searchWorkflows(e.target.value);
+        });
+    }
+});

@@ -1,213 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CosmoTools • AI Workspace</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .locked { filter: blur(8px); pointer-events: none; }
-    .tool-card { transition: all 0.3s; }
-    .tool-card:hover { transform: translateY(-4px); }
-  </style>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CosmoTools | AI Workspace</title>
+
+<meta name="description" content="CosmoTools is an AI workspace for writing, coding, business, research and productivity.">
+
+<meta name="keywords" content="AI, ChatGPT, Claude, AI Workspace, Coding AI, Writing AI, Business AI">
+
+<meta name="robots" content="index,follow">
+
+<meta name="theme-color" content="#0B1120">
+
+<meta property="og:title" content="CosmoTools">
+
+<meta property="og:description" content="Your AI Workspace for Modern Work">
+
+<meta property="og:image" content="images/preview.png">
+
+<meta property="og:type" content="website">
+
+<meta property="og:url" content="https://cosmotools.vercel.app">
+
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="stylesheet" href="css/layout.css">
+
+<link rel="stylesheet" href="css/chat.css">
+
+<link rel="stylesheet" href="css/sidebar.css">
+
+<link rel="stylesheet" href="css/responsive.css">
+
 </head>
-<body class="bg-zinc-950 text-white">
 
-  <!-- Paywall -->
-  <div id="paywall" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
-    <div class="bg-zinc-900 rounded-3xl p-10 max-w-lg w-full text-center">
-      <h1 class="text-4xl font-bold mb-2">🪐 CosmoTools</h1>
-      <p class="text-zinc-400 mb-8">Unlock all AI tools</p>
+<body>
 
-      <div class="space-y-4 mb-10">
-        <a href="https://cosmotools.gumroad.com/l/tfyjnl" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">Monthly — $4.99</a>
-        <a href="https://cosmotools.gumroad.com/l/pkawh" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left relative">
-          6 Months — $12.99 <span class="absolute top-3 right-4 bg-yellow-400 text-black text-xs px-3 py-1 rounded-full font-bold">POPULAR</span>
-        </a>
-        <a href="https://cosmotools.gumroad.com/l/qkgoew" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">Yearly — $24.99</a>
-      </div>
+<div id="app">
 
-      <div>
-        <p class="text-sm text-zinc-400 mb-3">Have a password from your Gumroad receipt?</p>
-        <input id="password-input" type="password" placeholder="Enter password" class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-center">
-        <button onclick="checkPassword()" class="mt-4 w-full bg-violet-600 hover:bg-violet-500 py-4 rounded-2xl font-semibold">Unlock All Tools</button>
-      </div>
-    </div>
-  </div>
+<!-- SIDEBAR -->
 
-  <!-- Main Layout -->
-  <div id="main-app" class="locked min-h-screen flex">
-    <!-- Sidebar -->
-    <div class="w-72 bg-zinc-900 border-r border-zinc-800 p-6">
-      <h1 class="text-2xl font-bold mb-8">🪐 CosmoTools</h1>
-      
-      <div onclick="openGeneralChat()" class="p-4 bg-violet-600 hover:bg-violet-500 rounded-2xl mb-8 cursor-pointer text-center font-medium">
-        💬 General AI Chat
-      </div>
+<aside class="sidebar">
 
-      <h3 class="text-sm uppercase tracking-widest text-zinc-500 mb-3">AI Tools</h3>
-      <div id="sidebar-tools" class="space-y-1"></div>
-    </div>
+<div class="logo">
 
-    <!-- Tools Grid -->
-    <div class="flex-1 p-8 overflow-y-auto">
-      <h2 class="text-3xl font-bold mb-8">AI Tools</h2>
-      <div id="tools-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-    </div>
-  </div>
+<img src="images/logo.png" alt="CosmoTools">
 
-  <!-- Tool Chat Modal -->
-  <div id="tool-chat-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
-    <div class="bg-zinc-900 w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col">
-      <div class="p-6 border-b flex justify-between items-center">
-        <h2 id="tool-chat-title" class="text-xl font-semibold"></h2>
-        <button onclick="closeToolChat()" class="text-3xl">×</button>
-      </div>
-      <div id="tool-chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
-      <div class="p-6 border-t border-zinc-700">
-        <div class="flex gap-3">
-          <input id="tool-user-input" type="text" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5" placeholder="Type your request...">
-          <button onclick="sendToolMessage()" class="bg-violet-600 px-10 rounded-3xl">Send</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<h2>CosmoTools</h2>
 
-  <!-- General Chat Modal -->
-  <div id="general-chat-modal" class="hidden fixed inset-0 bg-black/90 z-40 flex items-center justify-center">
-    <div class="bg-zinc-900 w-full max-w-4xl h-[90vh] rounded-3xl flex flex-col">
-      <div class="p-6 border-b flex justify-between items-center">
-        <h2 class="text-xl font-semibold">General AI Chat</h2>
-        <button onclick="closeGeneralChat()" class="text-3xl">×</button>
-      </div>
-      <div id="general-chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
-      <div class="p-6 border-t border-zinc-700">
-        <div class="flex gap-3">
-          <input id="general-user-input" type="text" class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5" placeholder="Ask anything...">
-          <button onclick="sendGeneralMessage()" class="bg-violet-600 px-10 rounded-3xl">Send</button>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
-  <script>
-    let isUnlocked = false;
-    const correctPasswords = ["cosmo-24", "cosmo-25", "cosmo-26"];
+<div class="sidebar-links">
 
-    const tools = [
-      { title: "Business Proposal", icon: "📝", base: "Write a professional business proposal" },
-      { title: "Coding Assistant", icon: "💻", base: "Help me write code" },
-      { title: "School Helper", icon: "📚", base: "Help me with school work" },
-      { title: "Marketing Strategy", icon: "📢", base: "Create marketing strategy" },
-      { title: "Research Assistant", icon: "🔍", base: "Research this topic" },
-      { title: "Resume Builder", icon: "📄", base: "Help me build a resume" },
-      { title: "Email Writer", icon: "✉️", base: "Write a professional email" }
-    ];
+<button class="nav-btn active">
 
-    function loadTools() {
-      const grid = document.getElementById('tools-grid');
-      const sidebar = document.getElementById('sidebar-tools');
+💬
 
-      const html = tools.map(t => `
-        <div onclick="openToolChat('${t.title}', '${t.base}')" class="tool-card bg-zinc-900 border border-zinc-800 hover:border-violet-500 p-8 rounded-3xl cursor-pointer">
-          <div class="text-5xl mb-6">${t.icon}</div>
-          <h3 class="text-xl font-semibold">${t.title}</h3>
-        </div>
-      `).join('');
+<span>AI Chat</span>
 
-      grid.innerHTML = html;
-      sidebar.innerHTML = tools.map(t => `
-        <div onclick="openToolChat('${t.title}', '${t.base}')" class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer flex items-center gap-3">
-          <span>${t.icon}</span><span>${t.title}</span>
-        </div>
-      `).join('');
-    }
+</button>
 
-    function openToolChat(title, base) {
-      if (!isUnlocked) return showPaywall();
-      document.getElementById('tool-chat-title').textContent = title;
-      document.getElementById('tool-chat-window').innerHTML = '';
-      document.getElementById('tool-chat-modal').classList.remove('hidden');
-      addToolMessage('ai', `Hello! I'm ready to help with your ${title.toLowerCase()}. What would you like to do?`);
-    }
+<button class="nav-btn">
 
-    function sendToolMessage() {
-      const input = document.getElementById('tool-user-input');
-      const text = input.value.trim();
-      if (!text) return;
+📄
 
-      addToolMessage('user', text);
-      input.value = '';
+<span>Documents</span>
 
-      const typingId = addToolTyping();
+</button>
 
-      // Simulate AI response (you can connect to /api/groq later)
-      setTimeout(() => {
-        removeToolTyping(typingId);
-        addToolMessage('ai', "Here's a detailed response based on your request...");
-      }, 1200);
-    }
+<button class="nav-btn">
 
-    function addToolMessage(role, content) {
-      const win = document.getElementById('tool-chat-window');
-      const div = document.createElement('div');
-      div.className = `message ${role === 'user' ? 'user-message' : 'ai-message'}`;
-      div.textContent = content;
-      win.appendChild(div);
-      win.scrollTop = win.scrollHeight;
-    }
+💻
 
-    function addToolTyping() {
-      const id = 't-' + Date.now();
-      const win = document.getElementById('tool-chat-window');
-      const div = document.createElement('div');
-      div.id = id;
-      div.className = "message ai-message";
-      div.textContent = "Thinking...";
-      win.appendChild(div);
-      win.scrollTop = win.scrollHeight;
-      return id;
-    }
+<span>Coding</span>
 
-    function removeToolTyping(id) {
-      const el = document.getElementById(id);
-      if (el) el.remove();
-    }
+</button>
 
-    function openGeneralChat() {
-      if (!isUnlocked) return showPaywall();
-      document.getElementById('general-chat-modal').classList.remove('hidden');
-    }
+<button class="nav-btn">
 
-    function sendGeneralMessage() {
-      // Similar to tool chat - you can connect to groq
-      alert("General chat connected to Groq (add your fetch logic here)");
-    }
+📈
 
-    function closeToolChat() {
-      document.getElementById('tool-chat-modal').classList.add('hidden');
-    }
+<span>Business</span>
 
-    function closeGeneralChat() {
-      document.getElementById('general-chat-modal').classList.add('hidden');
-    }
+</button>
 
-    function checkPassword() {
-      const input = document.getElementById('password-input').value.trim();
-      if (correctPasswords.includes(input)) {
-        isUnlocked = true;
-        document.getElementById('paywall').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('locked');
-      } else {
-        alert("Incorrect password.");
-      }
-    }
+<button class="nav-btn">
 
-    function showPaywall() {
-      if (!isUnlocked) document.getElementById('paywall').classList.remove('hidden');
-    }
+📢
 
-    document.addEventListener('DOMContentLoaded', loadTools);
-  </script>
+<span>Marketing</span>
+
+</button>
+
+<button class="nav-btn">
+
+🔬
+
+<span>Research</span>
+
+</button>
+
+<button class="nav-btn">
+
+⚡
+
+<span>Automation</span>
+
+</button>
+
+<button class="nav-btn">
+
+⭐
+
+<span>Favorites</span>
+
+</button>
+
+</div>
+
+<div class="sidebar-bottom">
+
+<button class="nav-btn">
+
+⚙
+
+<span>Settings</span>
+
+</button>
+
+</div>
+
+</aside>
+
+<!-- MAIN -->
+
+<div class="main">
+
+<header>
+
+<div class="welcome">
+
+<h1>
+
+What do you want to accomplish today?
+
+</h1>
+
+<p>
+
+One workspace for writing, coding, research and business.
+
+</p>
+
+</div>
+
+<div class="account">
+
+<button id="loginBtn">
+
+Login
+
+</button>
+
+</div>
+
+</header>
+<!-- ================= HERO INPUT ================= -->
+
+<section class="hero-search">
+
+<div class="prompt-box">
+
+<input
+id="heroInput"
+type="text"
+placeholder="Ask CosmoAI anything...">
+
+<button id="heroSend">
+
+➜
+
+</button>
+
+</div>
+
+<div class="quick-prompts">
+
+<button class="prompt-card">
+
+📄
+
+<h3>Write Proposal</h3>
+
+<p>Create professional business proposals.</p>
+
+</button>
+
+<button class="prompt-card">
+
+📧
+
+<h3>Write Email</h3>
+
+<p>Generate polished emails instantly.</p>
+
+</button>
+
+<button class="prompt-card">
+
+💻
+
+<h3>Generate Code</h3>
+
+<p>Build websites, apps and scripts.</p>
+
+</button>
+
+<button class="prompt-card">
+
+📊
+
+<h3>Analyze Spreadsheet</h3>
+
+<p>Understand Excel & Google Sheets.</p>
+
+</button>
+
+<button class="prompt-card">
+
+📈
+
+<h3>Marketing Strategy</h3>
+
+<p>Create campaigns and content.</p>
+
+</button>
+
+<button class="prompt-card">
+
+🔬
+
+<h3>Research Topic</h3>
+
+<p>Research faster with AI.</p>
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ================= CHAT ================= -->
+
+<section id="chatSection" class="chat-section">
+
+<div class="chat-header">
+
+<h2>CosmoAI</h2>
+
+<span>Powered by Groq</span>
+
+</div>
+
+<div id="chatBox" class="chat-box">
+
+<div class="ai-message">
+
+<div class="avatar">
+
+🪐
+
+</div>
+
+<div class="message">
+
+<h4>CosmoAI</h4>
+
+<p>
+
+Hello! I'm CosmoAI.
+
+I can help you with writing, coding, business, research, productivity and much more.
+
+What would you like to work on today?
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="chat-input">
+
+<textarea
+id="userInput"
+placeholder="Message CosmoAI..."
+rows="1"></textarea>
+
+<button id="sendBtn">
+
+➜
+
+</button>
+
+</div>
+
+</section>
+
+<!-- ================= WORKSPACE ================= -->
+
+<section class="workspace">
+
+<div class="workspace-header">
+
+<h2>
+
+Popular Workflows
+
+</h2>
+
+</div>
+
+<div id="workflowGrid" class="workflow-grid">
+
+<!-- Generated by workflow.js -->
+
+</div>
+
+</section>
+
+<!-- ================= RECENT ================= -->
+
+<section class="recent">
+
+<div class="workspace-header">
+
+<h2>
+
+Recent Conversations
+
+</h2>
+
+</div>
+
+<div class="recent-list">
+
+<div class="recent-card">
+
+<h3>Website Redesign</h3>
+
+<p>No messages yet</p>
+
+</div>
+
+<div class="recent-card">
+
+<h3>Marketing Plan</h3>
+
+<p>No messages yet</p>
+
+</div>
+
+<div class="recent-card">
+
+<h3>Business Proposal</h3>
+
+<p>No messages yet</p>
+
+</div>
+
+</div>
+
+</section><!-- ================= FOOTER ================= -->
+
+<footer>
+
+<div class="footer-left">
+
+<img src="images/logo.png" alt="CosmoTools">
+
+<span>CosmoTools</span>
+
+</div>
+
+<div class="footer-right">
+
+<p>
+
+Powered by Groq AI • Built for professionals
+
+</p>
+
+</div>
+
+</footer>
+
+</div>
+
+<!-- ================= LOGIN MODAL ================= -->
+
+<div id="loginModal" class="modal hidden">
+
+<div class="modal-content">
+
+<button class="close-modal">
+
+✕
+
+</button>
+
+<h2>
+
+Welcome Back
+
+</h2>
+
+<p>
+
+Sign in to access your saved conversations.
+
+</p>
+
+<form id="loginForm">
+
+<input
+type="email"
+placeholder="Email"
+required>
+
+<input
+type="password"
+placeholder="Password"
+required>
+
+<button type="submit">
+
+Login
+
+</button>
+
+</form>
+
+<p>
+
+Don't have an account?
+
+<a href="#" id="openSignup">
+
+Create one</a>
+
+</p>
+
+</div>
+
+</div>
+
+<!-- ================= SIGNUP MODAL ================= -->
+
+<div id="signupModal" class="modal hidden">
+
+<div class="modal-content">
+
+<button class="close-modal">
+
+✕
+
+</button>
+
+<h2>
+
+Create Account
+
+</h2>
+
+<p>
+
+Save chats, workflows and settings.
+
+</p>
+
+<form id="signupForm">
+
+<input
+type="text"
+placeholder="Full Name"
+required>
+
+<input
+type="email"
+placeholder="Email"
+required>
+
+<input
+type="password"
+placeholder="Password"
+required>
+
+<button type="submit">
+
+Create Account
+
+</button>
+
+</form>
+
+<p>
+
+Already have an account?
+
+<a href="#" id="openLogin">
+
+Login</a>
+
+</p>
+
+</div>
+
+</div>
+
+<script src="js/app.js"></script>
+
+<script src="js/chat-memory.js"></script>
+
+<script src="js/chat.js"></script>
+
+<script src="js/sidebar.js"></script>
+
+<script src="js/workflow.js"></script>
+
+<script src="js/utils.js"></script>
+
 </body>
+
 </html>

@@ -1,41 +1,49 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+    if (req.method !== "POST") {
+        return res.status(405).json({ error: "Method not allowed" });
+    }
 
-  const groqKey = process.env.GROQ_API_KEY;
+    try {
+        const { message } = req.body;
 
-  if (!groqKey) {
-    return res.status(200).json({ reply: "Groq API key is not configured in Vercel Environment Variables." });
-  }
+        if (!message) {
+            return res.status(400).json({ error: "No message provided" });
+        }
 
-  try {
-    const { message } = req.body;
+        const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${groqKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
-        messages: [{ role: "user", content: message }],
-        temperature: 0.85,
-        max_tokens: 1000
-      })
-    });
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${GROQ_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "llama-3.1-70b-versatile",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are CosmoAI, a helpful, fast, modern AI assistant inside a productivity app."
+                    },
+                    {
+                        role: "user",
+                        content: message
+                    }
+                ],
+                temperature: 0.7
+            })
+        });
 
-    const data = await groqResponse.json();
+        const data = await response.json();
 
-    const reply = data.choices && data.choices[0] && data.choices[0].message 
-      ? data.choices[0].message.content 
-      : "I received your request. Let me think of a good response...";
+        const reply =
+            data?.choices?.[0]?.message?.content ||
+            "No response from AI.";
 
-    res.status(200).json({ reply });
+        res.status(200).json({ reply });
 
-  } catch (error) {
-    console.error("Groq Error:", error);
-    res.status(200).json({ reply: "Sorry, I'm having trouble connecting to the AI. Please try again in a moment." });
-  }
+    } catch (error) {
+        console.error("Groq API Error:", error);
+        res.status(500).json({ error: "Server error" });
+    }
 }

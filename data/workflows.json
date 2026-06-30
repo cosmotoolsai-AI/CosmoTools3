@@ -1,26 +1,44 @@
 [
   {
+    "id": "write-proposal",
     "title": "Write Proposal",
+    "description": "Create professional business proposals in seconds.",
     "icon": "📄",
-    "prompt": "Write a professional business proposal for a client in the [industry] space.",
-    "description": "Create winning proposals fast"
+    "prompt": "Write a professional business proposal for:"
   },
   {
-    "title": "Generate Website",
+    "id": "write-email",
+    "title": "Write Email",
+    "description": "Generate clean, professional emails instantly.",
+    "icon": "📧",
+    "prompt": "Write a professional email about:"
+  },
+  {
+    "id": "code-generator",
+    "title": "Generate Code",
+    "description": "Build websites, apps, scripts and tools.",
     "icon": "💻",
-    "prompt": "Create a modern responsive landing page for [product].",
-    "description": "Full HTML + Tailwind"
+    "prompt": "Generate code for:"
   },
   {
+    "id": "marketing-strategy",
     "title": "Marketing Strategy",
-    "icon": "📢",
-    "prompt": "Give me a complete marketing strategy for [product].",
-    "description": "Content, channels, growth"
+    "description": "Create full marketing campaigns and funnels.",
+    "icon": "📈",
+    "prompt": "Create a marketing strategy for:"
   },
   {
-    "title": "Business Plan",
-    "icon": "📈",
-    "prompt": "Outline a full business plan for my startup idea: ",
-    "description": "Executive summary + financials"
+    "id": "research",
+    "title": "Research Topic",
+    "description": "Deep AI-powered research summaries.",
+    "icon": "🔬",
+    "prompt": "Research and explain:"
+  },
+  {
+    "id": "analyze-data",
+    "title": "Analyze Data",
+    "description": "Break down spreadsheets and datasets.",
+    "icon": "📊",
+    "prompt": "Analyze this data:"
   }
 ]
