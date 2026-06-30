@@ -5,78 +5,168 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CosmoTools • AI Workspace</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/chat.css">
   <style>
-    .message { max-width: 80%; padding: 14px 20px; border-radius: 20px; }
-    .user-message { background: rgb(124 58 237); margin-left: auto; }
-    .ai-message { background: rgb(39 39 42); margin-right: auto; }
+    .locked { filter: blur(8px); pointer-events: none; }
+    .message { padding: 14px 20px; border-radius: 18px; max-width: 75%; margin-bottom: 12px; }
+    .user-message { background: #7c3aed; margin-left: auto; }
+    .ai-message { background: #27272a; margin-right: auto; }
   </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100">
-  <div class="flex h-screen" id="app">
+<body class="bg-zinc-950 text-white">
 
+  <!-- Paywall Overlay -->
+  <div id="paywall" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
+    <div class="bg-zinc-900 rounded-3xl p-10 max-w-lg w-full text-center">
+      <h1 class="text-4xl font-bold mb-2">🪐 CosmoTools</h1>
+      <p class="text-zinc-400 mb-8">Unlock AI tools with your purchase</p>
+
+      <div class="space-y-4 mb-10">
+        <a href="https://cosmotools.gumroad.com/l/tfyjnl" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">
+          Monthly — $4.99
+        </a>
+        <a href="https://cosmotools.gumroad.com/l/pkawh" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left relative">
+          6 Months — $12.99 
+          <span class="absolute top-3 right-4 bg-yellow-400 text-black text-xs px-3 py-1 rounded-full font-bold">BEST VALUE</span>
+        </a>
+        <a href="https://cosmotools.gumroad.com/l/qkgoew" target="_blank" class="block p-5 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-left">
+          1 Year — $24.99
+        </a>
+      </div>
+
+      <div class="mt-6">
+        <p class="text-sm text-zinc-400 mb-3">Already purchased? Enter your password</p>
+        <input id="password-input" type="password" placeholder="Enter password (cosmo-24 / 25 / 26)" 
+               class="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-6 py-4 text-center">
+        <button onclick="checkPassword()" 
+                class="mt-4 w-full bg-violet-600 hover:bg-violet-500 py-4 rounded-2xl font-semibold">
+          Unlock Access
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App (Locked by default) -->
+  <div id="main-app" class="locked min-h-screen flex">
     <!-- Sidebar -->
-    <div id="sidebar" class="w-72 bg-zinc-900 border-r border-zinc-800"></div>
+    <div class="w-72 bg-zinc-900 border-r border-zinc-800 p-6">
+      <h1 class="text-2xl font-bold mb-8 flex items-center gap-2">🪐 CosmoTools</h1>
+      <div class="space-y-2">
+        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">💬 AI Chat</div>
+        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📝 Documents</div>
+        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">💻 Coding</div>
+        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📚 School Help</div>
+        <div class="p-3 hover:bg-zinc-800 rounded-xl cursor-pointer">📊 Business</div>
+      </div>
+    </div>
 
-    <!-- Main -->
+    <!-- Chat Area -->
     <div class="flex-1 flex flex-col">
-      <header class="h-14 border-b border-zinc-800 bg-zinc-900 px-6 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="text-2xl">🪐</span>
-          <h1 class="text-xl font-bold">CosmoTools</h1>
-        </div>
-        <button onclick="showPricing()" class="px-5 py-2 bg-violet-600 hover:bg-violet-500 rounded-xl">Upgrade</button>
+      <header class="h-16 border-b border-zinc-800 bg-zinc-900 flex items-center px-8">
+        <h2 class="text-xl font-semibold">AI Workspace</h2>
       </header>
 
-      <div class="flex-1 flex overflow-hidden">
-        <div class="flex-1 flex flex-col p-6" id="chat-area">
-          <div id="welcome" class="flex-1 flex flex-col items-center justify-center text-center">
-            <h2 class="text-4xl font-bold mb-4">What do you want to accomplish today?</h2>
-          </div>
-          <div id="chat-window" class="flex-1 overflow-y-auto space-y-6 hidden"></div>
+      <div id="chat-window" class="flex-1 overflow-y-auto p-8 space-y-6"></div>
 
-          <div class="mt-4">
-            <div class="relative max-w-3xl mx-auto">
-              <input id="user-input" type="text" 
-                     class="w-full bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5 text-lg focus:outline-none focus:border-violet-500"
-                     placeholder="Ask CosmoAI anything...">
-              <button onclick="sendMessage()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-violet-600 w-10 h-10 rounded-2xl">↑</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Panel -->
-        <div class="w-80 bg-zinc-900 border-l border-zinc-800 p-6 overflow-y-auto">
-          <h3 class="font-semibold mb-4">Popular Tools</h3>
-          <div id="workflows-grid" class="space-y-3"></div>
+      <div class="p-6 border-t border-zinc-800">
+        <div class="max-w-3xl mx-auto flex gap-3">
+          <input id="user-input" type="text" 
+                 class="flex-1 bg-zinc-800 border border-zinc-700 rounded-3xl px-6 py-5 text-lg"
+                 placeholder="Ask anything...">
+          <button onclick="sendMessage()" class="bg-violet-600 px-10 rounded-3xl">Send</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Pricing Modal -->
-  <div id="pricing-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-    <div class="bg-zinc-900 rounded-3xl p-8 w-full max-w-lg">
-      <h2 class="text-3xl font-bold text-center mb-8">Choose Your Plan</h2>
-      
-      <div class="space-y-4">
-        <a href="https://cosmotools.gumroad.com/l/tfyjnl" target="_blank" class="block p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer">
-          <div class="flex justify-between"><span class="font-semibold">Monthly</span><span class="font-bold">$4.99</span></div>
-        </a>
-        <a href="https://cosmotools.gumroad.com/l/pkawh" target="_blank" class="block p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer relative">
-          <div class="flex justify-between"><span class="font-semibold">6 Months</span><span class="font-bold">$12.99</span></div>
-          <span class="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs px-3 py-1 rounded-full font-bold">MOST POPULAR</span>
-        </a>
-        <a href="https://cosmotools.gumroad.com/l/qkgoew" target="_blank" class="block p-6 bg-zinc-800 hover:bg-zinc-700 rounded-2xl cursor-pointer">
-          <div class="flex justify-between"><span class="font-semibold">1 Year</span><span class="font-bold">$24.99</span></div>
-        </a>
-      </div>
+  <script>
+    let isUnlocked = false;
+    const correctPasswords = ["cosmo-24", "cosmo-25", "cosmo-26"];
 
-      <button onclick="hidePricing()" class="mt-6 w-full py-3 text-zinc-400">Close</button>
-    </div>
-  </div>
+    function checkPassword() {
+      const input = document.getElementById('password-input').value.trim();
+      if (correctPasswords.includes(input)) {
+        isUnlocked = true;
+        document.getElementById('paywall').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('locked');
+        addMessage('ai', '✅ Access granted! Welcome to CosmoTools. How can I help you today?');
+      } else {
+        alert("Incorrect password. Please try again or purchase a plan.");
+      }
+    }
 
-  <script type="module" src="js/app.js"></script>
+    function showPaywall() {
+      if (!isUnlocked) {
+        document.getElementById('paywall').classList.remove('hidden');
+      }
+    }
+
+    async function sendMessage() {
+      if (!isUnlocked) {
+        showPaywall();
+        return;
+      }
+
+      const input = document.getElementById('user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage('user', text);
+      input.value = '';
+
+      const typingId = addTypingIndicator();
+
+      try {
+        const res = await fetch('/api/groq', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        removeTyping(typingId);
+        addMessage('ai', data.reply);
+      } catch(e) {
+        removeTyping(typingId);
+        addMessage('ai', "Sorry, AI is temporarily unavailable.");
+      }
+    }
+
+    function addMessage(role, content) {
+      const window = document.getElementById('chat-window');
+      const div = document.createElement('div');
+      div.className = `message ${role === 'user' ? 'user-message' : 'ai-message'}`;
+      div.textContent = content;
+      window.appendChild(div);
+      window.scrollTop = window.scrollHeight;
+    }
+
+    function addTypingIndicator() {
+      const id = 'typing-' + Date.now();
+      const window = document.getElementById('chat-window');
+      const div = document.createElement('div');
+      div.id = id;
+      div.className = "message ai-message";
+      div.textContent = "CosmoAI is thinking...";
+      window.appendChild(div);
+      window.scrollTop = window.scrollHeight;
+      return id;
+    }
+
+    function removeTyping(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    // Enter key support
+    document.getElementById('user-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    // Show paywall when trying to use tools
+    document.querySelectorAll('.cursor-pointer').forEach(el => {
+      el.addEventListener('click', () => {
+        if (!isUnlocked) showPaywall();
+      });
+    });
+  </script>
 </body>
 </html>
