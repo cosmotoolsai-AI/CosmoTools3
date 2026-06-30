@@ -1,14 +1,18 @@
 export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const groqKey = process.env.GROQ_API_KEY;
 
   if (!groqKey) {
-    return res.status(200).json({ reply: "Error: Groq API key is not set in Vercel." });
+    return res.status(200).json({ reply: "Groq API key is not configured in Vercel Environment Variables." });
   }
 
   try {
     const { message } = req.body;
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${groqKey}`,
@@ -17,18 +21,21 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: message }],
-        temperature: 0.8,
-        max_tokens: 800
+        temperature: 0.85,
+        max_tokens: 1000
       })
     });
 
-    const data = await response.json();
+    const data = await groqResponse.json();
 
-    res.status(200).json({ 
-      reply: data.choices?.[0]?.message?.content || "I received your message. How else can I help?" 
-    });
+    const reply = data.choices && data.choices[0] && data.choices[0].message 
+      ? data.choices[0].message.content 
+      : "I received your request. Let me think of a good response...";
+
+    res.status(200).json({ reply });
 
   } catch (error) {
-    res.status(200).json({ reply: "Sorry, I'm having trouble connecting to the AI right now. Please try again." });
+    console.error("Groq Error:", error);
+    res.status(200).json({ reply: "Sorry, I'm having trouble connecting to the AI. Please try again in a moment." });
   }
 }
