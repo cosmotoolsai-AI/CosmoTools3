@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Write Proposal",
+    "icon": "📄",
+    "prompt": "Write a professional business proposal for a client in the [industry] space.",
+    "description": "Create winning proposals fast"
+  },
+  {
+    "title": "Generate Website",
+    "icon": "💻",
+    "prompt": "Create a modern responsive landing page for [product].",
+    "description": "Full HTML + Tailwind"
+  },
+  {
+    "title": "Marketing Strategy",
+    "icon": "📢",
+    "prompt": "Give me a complete marketing strategy for [product].",
+    "description": "Content, channels, growth"
+  },
+  {
+    "title": "Business Plan",
+    "icon": "📈",
+    "prompt": "Outline a full business plan for my startup idea: ",
+    "description": "Executive summary + financials"
+  }
+]

@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: 124 58 237;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+}

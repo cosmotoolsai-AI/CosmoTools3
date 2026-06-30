@@ -1,0 +1,9 @@
+{
+  "name": "cosmotools",
+  "version": "1.0.0",
+  "description": "CosmoTools AI Workspace",
+  "scripts": {
+    "dev": "npx serve ."
+  },
+  "dependencies": {}
+}
