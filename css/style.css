@@ -333,4 +333,56 @@ header{
 
 .hidden{
     display:none !important;
+    .paywall{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+}
+
+.paywall.hidden{
+    display:none !important;
+}
+
+.paywall-box{
+    background:#0B1220;
+    padding:28px;
+    border-radius:16px;
+    width:340px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,.1);
+}
+
+.paywall-box input{
+    width:100%;
+    padding:12px;
+    margin:12px 0;
+    border-radius:10px;
+    border:none;
+    outline:none;
+}
+
+.paywall-box button{
+    width:100%;
+    padding:10px;
+    margin-top:8px;
+    background:#6366F1;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.plans{
+    margin-top:12px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:13px;
+    opacity:0.8;
+}
 }

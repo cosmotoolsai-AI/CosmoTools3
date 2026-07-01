@@ -517,10 +517,31 @@ Login</a>
 </div>
 
 <script src="js/modals.js"></script>
+<script src="js/lock.js"></script>
 <script src="js/app.js"></script>
-<script src="js/chat.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/workflows.js"></script>
+<script src="js/chat.js"></script>
+<div id="paywall" class="paywall hidden">
+    <div class="paywall-box">
+
+        <h2>Unlock CosmoTools Pro 🔐</h2>
+        <p>Enter your license key from Gumroad</p>
+
+        <input id="licenseKey" type="password" placeholder="cosmo-24 / cosmo-25 / cosmo-26" />
+
+        <button id="unlockBtn">Unlock</button>
+
+        <div class="plans">
+            <a href="https://cosmotools.gumroad.com/l/tfyjnl" target="_blank">Monthly</a>
+            <a href="https://cosmotools.gumroad.com/l/pkawh" target="_blank">6 Months</a>
+            <a href="https://cosmotools.gumroad.com/l/qkgoew" target="_blank">Year</a>
+        </div>
+
+        <button id="closePaywall">Continue Free (Locked)</button>
+
+    </div>
+</div>
 </body>
 
 </html>

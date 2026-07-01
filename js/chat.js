@@ -51,6 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function handleSend() {
 
+        if (window.requireUnlock && !window.requireUnlock()) return;
+
         const text = userInput.value.trim();
         if (!text) return;
 
